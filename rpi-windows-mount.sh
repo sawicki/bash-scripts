@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script creates a backup image of the Raspberry Pi's SD card.
+# This script mounts a network share on a Windows machine.
 # Create a mountpoint for the network share called WindowsShare
 # in the home directory of the user running the script.
 
@@ -54,39 +54,5 @@ if ! is_mountpoint "$windowsShareDir"; then
     else
         echo "Successfully mounted $networkSharePath to $windowsShareDir."
     fi
-fi
-
-
-
-# Full path for the backup file
-backupFilePath="$windowsShareDir/$filename"
-
-# Check if the file already exists
-if [ -f "$backupFilePath" ]; then
-    read -p "File $backupFilePath already exists. Overwrite? (y/N): " confirm
-    if [[ $confirm != [yY] ]]; then
-        echo "Operation aborted."
-        exit 1
-    fi
-fi
-
-# Run dd with real-time progress
-sudo dd bs=4M if=/dev/mmcblk0 of="$backupFilePath" status=progress
-
-# Check if the dd operation was successful
-if [ $? -eq 0 ]; then
-    echo "dd operation completed successfully."
-    
-    # Unmount the WindowsShare directory
-    echo "Unmounting the WindowsShare directory..."
-    sudo umount ~/WindowsShare
-    
-    if [ $? -eq 0 ]; then
-        echo "Successfully unmounted WindowsShare."
-    else
-        echo "Failed to unmount WindowsShare. It may be in use."
-    fi
-else
-    echo "dd operation failed."
 fi
 
