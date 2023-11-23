@@ -1,10 +1,15 @@
 #!/bin/bash
 
+# This script creates a backup image of the Raspberry Pi's SD card.
+# create a mountpoint for the network share called WindowsShare
+# in the home directory of the user running the script.
+# put username and password in a .env file in the same directory as the script.
+ 
 # Change to the user's home directory
 cd ~
 
-# Load environment variables
-source /home/pi/scripts/.env
+# Load environment variables from .env file
+source /home/pi/scripts/.env   # comment out if not using .env file
 
 # Get the hostname of the machine
 hostname=$(hostname)
@@ -14,6 +19,9 @@ filename="${hostname}-backup.img"
 
 # Define WindowsShare directory path
 windowsShareDir=~/WindowsShare
+
+# Define the network share path
+networkSharePath="//OFFICE-DESKTOP/RPI-Share"
 
 # Create WindowsShare directory if it doesn't exist
 mkdir -p "$windowsShareDir"
@@ -30,7 +38,13 @@ smbPassword="${SMB_PASSWORD}"
 # Check if WindowsShare is already mounted
 if ! is_mountpoint "$windowsShareDir"; then
     # Mount the network share if not mounted
-    sudo mount -t cifs -o username="$smbUsername",password="$smbPassword" //OFFICE-DESKTOP\\RPI-Backups "$windowsShareDir"
+    sudo mount -t cifs -o username="$smbUsername",password="$smbPassword" "$networkSharePath" "$windowsShareDir"
+fi
+
+# Check if the mount was successful
+if [ $? -ne 0 ]; then
+    echo "Mount failed. Aborting."
+    exit 1
 fi
 
 # Full path for the backup file
