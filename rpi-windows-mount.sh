@@ -13,6 +13,12 @@
 # These can be set in a .env file in the same directory as the script or in the environment.
 
 # Change to the user's home directory
+# Check if the script is running as root
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root"
+    exit 1
+fi
+
 cd ~
 
 # Load environment variables from .env file
