@@ -56,3 +56,5 @@ if ! is_mountpoint "$windowsShareDir"; then
     fi
 fi
 
+echo "Unmount with: sudo umount $windowsShareDir"
+
